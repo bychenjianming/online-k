@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+
+		<!--
+    	作者：3212186@qq.com
+    	时间：2016-12-21
+    	描述：以下两个JS在head引用，注意路径
+    -->
+
+		<script type="text/javascript" src="custom/dist/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript" src="custom/dist/echarts.min.js"></script>
+		<script type="text/javascript" src="custom/dist/socket.io.min.js"></script>
+	</head>
+
+	<body>
+
+		<!--
+    	作者：3212186@qq.com
+    	时间：2017-02-06
+    	描述：以下2个隐藏域 可放在页面相关位置，注意hid_chart_symbol需写默认的商品编码,hid_chart_parm为调用bindData_chart()方法的默认的请求参数
+    -->
+		<input type="hidden" id="hid_chart_symbol" value="GOLD" />
+		<input type="hidden" id="hid_chart_parm" value="0" />
+
+		<div id="chart_Stock_today" style="height: 50px;background-color: black;color: white">
+			<!--
+    	作者：3212186@qq.com
+    	时间：2017-2-21
+    	描述：主要用到下面五个span，用于更新五个价格指标，外层div可无视
+    -->
+			昨收：<span id="s_closePrice_yed">--</span> 今开：
+			<span id="s_openPrice_today">--</span> 今高：
+			<span id="s_maxPrice_today">--</span> 今低：
+			<span id="s_minPrice_today">--</span> 今收：
+			<span id="s_closePrice_today">--</span>
+		</div>
+
+		<!--
+    	作者：3212186@qq.com
+    	时间：2017-02-07
+    	描述：报表div 需放到需要显示行情的地方，高度可自由调整，宽度自适应
+    	DIV已重命名
+    -->
+		<div id="div_ShowChart" style="height: 225px; "></div>
+
+		<br><br>
+
+		<a href="#" onclick="javascript:bindSkin(0);">白色皮肤</a>
+		<a href="#" onclick="javascript:bindSkin(1);">黑色皮肤</a>
+		<hr>
+
+		<!--
+    	作者：3212186@qq.com
+    	时间：2017-02-06
+    	描述：以下几个按钮事件可放在生产环境中的具体美化后的按钮中，相比上个版本，修改了方法名,具体行情的小数点配置参见bindechart.js的myChart_config对象
+    -->
+
+		<a href="#" onclick="javascript:bindData_chart(0);">秒线</a>
+		<hr> 分时线：
+
+		<a href="#" onclick="javascript:bindData_chart(-1);">1分钟</a>
+		<a href="#" onclick="javascript:bindData_chart(-3);">3分钟</a>
+		<a href="#" onclick="javascript:bindData_chart(-5);">5分钟</a>
+		<a href="#" onclick="javascript:bindData_chart(-10);">10分钟</a>
+		<a href="#" onclick="javascript:bindData_chart(-15);">15分钟</a>
+		<a href="#" onclick="javascript:bindData_chart(-30);">30分钟</a>
+		<a href="#" onclick="javascript:bindData_chart(-60);">1H</a>
+		<hr> 蜡烛图：
+		<a href="#" onclick="javascript:bindData_chart(1);">1分钟</a>
+		<a href="#" onclick="javascript:bindData_chart(3);">3分钟</a>
+		<a href="#" onclick="javascript:bindData_chart(5);">5分钟</a>
+		<a href="#" onclick="javascript:bindData_chart(10);">10分钟</a>
+		<a href="#" onclick="javascript:bindData_chart(15);">15分钟</a>
+		<a href="#" onclick="javascript:bindData_chart(30);">30分钟</a>
+		<a href="#" onclick="javascript:bindData_chart(60);">1H</a>
+
+		<br>
+		<br>
+
+		<!--
+    	作者：3212186@qq.com
+    	时间：2017-02-20
+    	描述：以下方法用于切换品种用，在品种切换时，需同时调用本方法，注意商品编码以目前演示编码为准（参数1），行情小数在binderchart.js配置
+    -->
+		<a href="#" onclick="javascript:bindData_Symbol('GOLD');">GOLD</a>
+		<a href="#" onclick="javascript:bindData_Symbol('US_OIL');">US_OIL</a>
+		<a href="#" onclick="javascript:bindData_Symbol('UK_OIL');">UK_OIL</a>
+		<a href="#" onclick="javascript:bindData_Symbol('XPTUSD');">XPTUSD</a>
+		<a href="#" onclick="javascript:bindData_Symbol('XPDUSD');">XPDUSD</a>
+		<a href="#" onclick="javascript:bindData_Symbol('COPPER');">COPPER</a>
+		<a href="#" onclick="javascript:bindData_Symbol('NATGAS');">NATGAS</a>
+		<a href="#" onclick="javascript:bindData_Symbol('SOYBEAN');">SOYBEAN</a>
+		<a href="#" onclick="javascript:bindData_Symbol('XAGUSD');">XAGUSD</a>
+
+		<hr>
+		<!--
+    	作者：3212186@qq.com
+    	时间：2017-02-10
+    	描述：以下为实时行情的显示区域,实时行情的绑定方法在bindchart.js 的bindData_realPrice 函数中
+    -->
+		实时数据演示：（生产环境中可删除）
+		<p>GOLD：<span id="sp_sp_GOLD">--</span></p>
+		<p>US_OIL：<span id="sp_US_OIL">--</span></p>
+		<p>UK_OIL：<span id="sp_UK_OIL">--</span></p>
+		<p>XPTUSD：<span id="sp_XPTUSD">--</span></p>
+		<p>XPDUSD：<span id="sp_XPDUSD">--</span></p>
+		<p>COPPER：<span id="sp_COPPER">--</span></p>
+		<p>NATGAS：<span id="sp_NATGAS">--</span></p>
+		<p>SOYBEAN：<span id="sp_SOYBEAN">--</span></p>
+		<p>XAGUSD：<span id="sp_XAGUSD">--</span></p>
+
+		<!--以下script引用 需在页面底部引用，更新于2017-02-06-->
+
+		<script language="javascript">
+			
+			//下面函数内的具体业务逻辑可根据实际生产环境进行书写，此为实时行情波动。
+			function realTimePrice_Bind(symbol, price) {
+				$('#sp_' + symbol).html(price);
+			}
+
+			window.onload = function() {
+				var js = document.createElement("script");
+				js.language = "javascript";
+				js.src = "custom/bindCharts.js";
+				//js.src = "custom/bindCharts.min.js";
+				document.body.appendChild(js);
+			}
+		</script>
+
+	</body>
+
+</html>
